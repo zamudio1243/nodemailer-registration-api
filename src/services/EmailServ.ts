@@ -4,8 +4,10 @@ import {
   EMAIL_PASS,
   EMAIL_PORT,
   EMAIL_USER,
+  PORT,
 } from "../utilis/constants.js";
 import mjml2html from "mjml";
+import { ConfirmEmailData, EmailType } from "../types/EmailTypes.js";
 
 export class EmailServ {
   static instance: EmailServ;
@@ -29,27 +31,32 @@ export class EmailServ {
     });
   }
 
-  async sendMail(
+  async sendMail<T extends EmailType>(
     email: string,
-    token: string,
-    serv: { host: string; port: number }
+    type: T,
+    data: T extends EmailType.CONFIRM ? ConfirmEmailData : never
   ) {
     if (!this.transporter) {
       this.createConnection();
     }
-    const mailOptions = {
-      from: EMAIL_USER,
-      to: email,
-      subject: "Email Confirmation",
-      html: this.htmlEmailConfirm(token, serv),
-    };
+    switch (type) {
+      case EmailType.CONFIRM:
+        const mailOptions = {
+          from: EMAIL_USER,
+          to: email,
+          subject: "Email Confirmation",
+          html: this.htmlEmailConfirm(data.token, data.fullHost),
+        };
 
-    return await this.transporter.sendMail(mailOptions).then((info: any) => {
-      console.log("Email sent: " + info.response);
-    });
+        return await this.transporter
+          .sendMail(mailOptions)
+          .then((info: any) => {
+            console.log("Email sent: " + info.response);
+          });
+    }
   }
 
-  htmlEmailConfirm(token: string, serv: { host: string; port: number }) {
+  htmlEmailConfirm(token: string, fullHost: string) {
     const mjml = `
     <mjml>
       <mj-head>
@@ -81,7 +88,7 @@ export class EmailServ {
           </mj-section>
           <mj-section>
             <mj-column>
-              <mj-button font-size="18px" background-color="#007bff" color="#ffffff" href="${serv.host}:${serv.port}/reset-password/${token}">
+              <mj-button font-size="18px" background-color="#007bff" color="#ffffff" href="${fullHost}/reset-password/${token}">
                 Confirm Email
               </mj-button>
             </mj-column>

@@ -2,7 +2,7 @@ import jwt, { Secret } from "jsonwebtoken";
 import { NextFunction, Response, Request } from "express";
 import { JWT_SECRET } from "../utilis/constants.js";
 
-class Auth {
+class AuthMiddle {
   private static jwtSecret: Secret = JWT_SECRET;
 
   static authenticateToken(req: Request, res: Response, next: NextFunction) {
@@ -17,9 +17,9 @@ class Auth {
     });
   }
 
-  static generateAccessToken(user: any) {
-    return jwt.sign({ userId: user.id }, this.jwtSecret, { expiresIn: "1h" });
+  static generateAccessToken(userId: string) {
+    return jwt.sign({ userId }, this.jwtSecret, { expiresIn: "24h" });
   }
 }
 
-export default Auth;
+export default AuthMiddle;

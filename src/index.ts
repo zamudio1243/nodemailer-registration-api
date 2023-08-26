@@ -1,28 +1,27 @@
 import express, { Express, Request, Response } from "express";
-import Auth from "./middlewares/Auth.js";
+import AuthMiddle from "./middlewares/AuthMiddle.js";
 import { EmailServ } from "./services/EmailServ.js";
+import { EmailType } from "./types/EmailTypes.js";
+import { PrismaClient } from "@prisma/client";
+import CryptoServ from "./services/CryptoServ.js";
+import AuthRoute from "./routes/AuthRoute.js";
+import { PORT } from "./utilis/constants.js";
+import { log } from "console";
 
 const app: Express = express();
 const port = 3000;
 
+const prisma = new PrismaClient();
+
 app.use(express.json());
-//app.use(Auth.authenticateToken);
+app.use(AuthRoute);
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello Bambu-mobile!");
 });
 
-app.post("/login", Auth.authenticateToken, (req: Request, res: Response) => {});
-
-app.post("/signup", (req: Request, res: Response) => {});
-
-app.post("/reset-password/:token", (req: Request, res: Response) => {});
-
 app.post("/test", async (req: Request, res: Response) => {
-  const host = req.headers.host;
-  const mail = new EmailServ();
-  await mail.sendMail("zamudio1243@gmail.com", "token", { host, port });
-  return res.send("Email sent");
+  res.send("ok");
 });
 
 app.listen(port, () => {

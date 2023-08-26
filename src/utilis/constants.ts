@@ -9,3 +9,5 @@ export const {
   EMAIL_USER,
   EMAIL_PASS,
 } = process.env;
+
+export const PORT = process.env.PORT || 3000;
