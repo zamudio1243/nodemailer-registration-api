@@ -1,10 +1,9 @@
-import dotenv from "dotenv";
 import jwt, { Secret } from "jsonwebtoken";
 import { NextFunction, Response, Request } from "express";
-dotenv.config();
+import { JWT_SECRET } from "../utilis/constants.js";
 
 class Auth {
-  private static jwtSecret: Secret = process.env.JWT_SECRET as Secret;
+  private static jwtSecret: Secret = JWT_SECRET;
 
   static authenticateToken(req: Request, res: Response, next: NextFunction) {
     const authHeader: string | undefined = req.headers["authorization"];

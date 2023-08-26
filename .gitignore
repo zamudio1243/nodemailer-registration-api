@@ -18,6 +18,7 @@ node_modules/
 
 # Compiled binary addons (used by node-gyp)
 build/
+dist/
 
 # Dependency directories
 .idea/
