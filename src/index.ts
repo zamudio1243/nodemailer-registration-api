@@ -18,10 +18,10 @@ app.post("/signup", (req: Request, res: Response) => {});
 
 app.post("/reset-password/:token", (req: Request, res: Response) => {});
 
-app.post("/test", (req: Request, res: Response) => {
+app.post("/test", async (req: Request, res: Response) => {
   const host = req.headers.host;
   const mail = new EmailServ();
-  mail.sendMail("zamudio1243@gmail.com", "token", { host, port });
+  await mail.sendMail("zamudio1243@gmail.com", "token", { host, port });
   return res.send("Email sent");
 });
 
