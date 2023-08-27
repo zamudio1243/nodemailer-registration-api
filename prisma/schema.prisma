@@ -15,4 +15,5 @@ model users {
   username String @db.VarChar(255)
   password String @db.VarChar(255)
   email    String @db.VarChar(255)
+  verified Boolean @default(false)
 }

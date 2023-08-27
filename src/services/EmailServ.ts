@@ -88,7 +88,7 @@ export class EmailServ {
           </mj-section>
           <mj-section>
             <mj-column>
-              <mj-button font-size="18px" background-color="#007bff" color="#ffffff" href="${fullHost}/reset-password/${token}">
+              <mj-button font-size="18px" background-color="#007bff" color="#ffffff" href="${fullHost}/confirm-email/${token}">
                 Confirm Email
               </mj-button>
             </mj-column>

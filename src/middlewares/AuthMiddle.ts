@@ -10,15 +10,26 @@ class AuthMiddle {
     const token: string | undefined = authHeader && authHeader.split(" ")[1];
     if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, this.jwtSecret, (err, user: any) => {
+    jwt.verify(token, AuthMiddle.jwtSecret, (err, payload: any) => {
       if (err) return res.sendStatus(403);
-      //req.userId = user;
+      req.body.userId = payload.userId;
       next();
     });
   }
 
-  static generateAccessToken(userId: string) {
-    return jwt.sign({ userId }, this.jwtSecret, { expiresIn: "24h" });
+  static validateToken(token: string) {
+    let payload: any | false = false;
+    try {
+      const decoded = jwt.verify(token, this.jwtSecret);
+      payload = decoded;
+    } catch (err) {
+      console.log(err);
+    }
+    return payload;
+  }
+
+  static generateAccessToken(payload: number, expiresIn: string) {
+    return jwt.sign({ userId: payload }, this.jwtSecret, { expiresIn });
   }
 }
 
