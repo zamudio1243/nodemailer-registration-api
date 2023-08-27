@@ -19,6 +19,10 @@ export class EmailServ {
     EmailServ.instance = this;
   }
 
+  /**
+   * The function creates a connection to a mail server using the provided email host, port, username,
+   * and password.
+   */
   createConnection() {
     this.transporter = nodemailer.createTransport({
       host: EMAIL_HOST,
@@ -31,6 +35,16 @@ export class EmailServ {
     });
   }
 
+  /**
+   * The function `sendMail` sends an email with a confirmation link to the specified email address.
+   * @param {string} email - The `email` parameter is a string that represents the recipient's email
+   * address.
+   * @param {T} type - The `type` parameter is a generic type `T` that extends the `EmailType` enum. It
+   * is used to specify the type of email being sent.
+   * @param data - The `data` parameter is an object that contains the necessary information for
+   * sending the email. It depends on the `type` of email being sent.
+   * @returns a Promise that resolves to any
+   */
   async sendMail<T extends EmailType>(
     email: string,
     type: T,
