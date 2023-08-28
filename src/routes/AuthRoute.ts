@@ -1,55 +1,66 @@
 import { PrismaClient } from "@prisma/client";
-import express, { Express, Request, Response } from "express";
+import express, { Request, Response } from "express";
 import AuthMiddle from "../middlewares/AuthMiddle.js";
 import CryptoServ from "../services/CryptoServ.js";
 import { EmailServ } from "../services/EmailServ.js";
 import { EmailType } from "../types/EmailTypes.js";
+import ValidationMiddle from "../middlewares/ValidationMiddle.js";
 
 const router = express.Router();
 const prisma = new PrismaClient();
 
-router.post("/signup", async (req: Request, res: Response) => {
-  const { email, password, username } = req.body;
+router.post(
+  "/signup",
+  ValidationMiddle.signupValidationRules(),
+  ValidationMiddle.validate,
+  async (req: Request, res: Response) => {
+    const { email, password, username } = req.body;
 
-  const isEmailExist = await prisma.users.findFirst({
-    where: {
-      email,
-    },
-  });
-  if (isEmailExist) {
-    return res.status(400).send("Email already exist");
+    const isEmailExist = await prisma.users.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (isEmailExist) {
+      return res.status(400).send("Email already exist");
+    }
+
+    const user = await prisma.users.create({
+      data: {
+        email,
+        password: CryptoServ.encryptPass(password),
+        username,
+      },
+    });
+
+    const mail = new EmailServ();
+    await mail.sendMail<EmailType.CONFIRM>(email, EmailType.CONFIRM, {
+      token: AuthMiddle.generateAccessToken(user.id, "24h"),
+      fullHost: `${req.protocol}://${req.headers.host}`,
+    });
+
+    const token = AuthMiddle.generateAccessToken(email, "24h");
+    return res.send({ token });
   }
+);
 
-  const user = await prisma.users.create({
-    data: {
-      email,
-      password: CryptoServ.encryptPass(password),
-      username,
-    },
-  });
-
-  const mail = new EmailServ();
-  await mail.sendMail<EmailType.CONFIRM>(email, EmailType.CONFIRM, {
-    token: AuthMiddle.generateAccessToken(user.id, "24h"),
-    fullHost: `${req.protocol}://${req.headers.host}`,
-  });
-
-  const token = AuthMiddle.generateAccessToken(email, "24h");
-  return res.send({ token });
-});
-
-router.post("/login", async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  const user = await prisma.users.findFirst({
-    where: {
-      email,
-    },
-  });
-  if (!CryptoServ.isValidPass(password, user.password))
-    return res.status(400).send({ error: "password is invalid" });
-  const token = AuthMiddle.generateAccessToken(user.id, "24h");
-  return res.status(200).send({ token });
-});
+router.post(
+  "/login",
+  ValidationMiddle.loginValidationRules(),
+  ValidationMiddle.validate,
+  async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+    const user = await prisma.users.findFirst({
+      where: {
+        email,
+      },
+    });
+    if (!CryptoServ.isValidPass(password, user.password))
+      return res.status(400).send({ error: "password is invalid" });
+    const token = AuthMiddle.generateAccessToken(user.id, "24h");
+    return res.status(200).send({ token });
+  }
+);
 
 router.get("/confirm-email/:token", async (req: Request, res: Response) => {
   const { token } = req.params;

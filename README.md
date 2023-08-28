@@ -1,4 +1,5 @@
 # Bambú-mobile backend test
+
 This Node.js REST API provides endpoints to simulate user registration and email confirmation processes.
 
 ## Features
@@ -42,6 +43,7 @@ This endpoint allows users to register by providing the following parameters in 
 Upon successful registration, a verification email containing a token will be sent to the provided email address.
 
 Example request:
+
 ```http
 POST /signup
 Content-Type: application/json
@@ -58,6 +60,7 @@ Content-Type: application/json
 Users can log in using this endpoint by providing their email and password. The server will respond with an authentication token.
 
 Example request:
+
 ```http
 POST /login
 Content-Type: application/json
@@ -73,6 +76,7 @@ Content-Type: application/json
 This endpoint is used to confirm a user's email address using the verification token received in the verification email.
 
 Example request:
+
 ```http
 GET /confirm-email/token
 ```
@@ -82,6 +86,7 @@ GET /confirm-email/token
 Once a user is authenticated, they can access this protected endpoint by including the authentication token in the `Authorization` header with the `Bearer` scheme.
 
 Example request:
+
 ```http
 GET /protected
 Authorization: Bearer your-auth-token
@@ -111,3 +116,4 @@ This project relies on the following libraries and packages:
 - **mjml** (`^4.14.1`): Framework for responsive email templates.
 - **nodemailer** (`^6.9.4`): Library for sending emails from Node.js.
 - **nodemon** (`^3.0.1`): Utility that restarts the server when changes are detected during development.
+- **express-validator** (`^7.0.1`): Utility that validate body froms request.
