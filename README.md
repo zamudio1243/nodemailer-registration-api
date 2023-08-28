@@ -1,4 +1,4 @@
-# Bambú-mobile backend test
+# User Registration and Email Confirmation
 
 This Node.js REST API provides endpoints to simulate user registration and email confirmation processes.
 
